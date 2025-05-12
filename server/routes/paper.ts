@@ -42,7 +42,6 @@ router.post('/upload', upload.single('file'), async (req, res): Promise<void> =>
       throw new Error('SECRET_KEY is not defined in the environment variables');
     }
     const decoded = jwt.verify(token, SECRET_KEY);
-    console.log('decoded:', decoded); //
     if (typeof decoded !== 'object' || !('id' in decoded)) {
       res.status(403).json({ message: '유효하지 않은 토큰' });
       return;
@@ -74,7 +73,6 @@ router.post('/upload', upload.single('file'), async (req, res): Promise<void> =>
     res.json({ message: '업로드 완료', paper });
     return;
   } catch (err: any) {
-    console.error('JWT VERIFY ERROR:', err); //
     res.status(403).json({ message: '유효하지 않은 요청', error: err.message });
     return;
   }
