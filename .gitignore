@@ -1,0 +1,9 @@
+# Node modules
+front/node_modules/
+server/node_modules/
+
+# Logs
+*.log
+
+# dotenv
+*.env
