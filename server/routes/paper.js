@@ -9,9 +9,9 @@ const Subject = require('../models/Subject');
 const User = require('../models/User');
 
 const router = express.Router();
-const SECRET_KEY = 'mysecretkey';
+require('dotenv').config();
+const SECRET_KEY = process.env.SECRET_KEY;
 
-// 파일 저장 설정
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const dir = 'uploads/';
@@ -27,7 +27,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// 족보 업로드
 router.post('/upload', upload.single('file'), async (req, res) => {
   const { subjectId, description } = req.body;
   const auth = req.headers.authorization;
@@ -55,13 +54,12 @@ router.post('/upload', upload.single('file'), async (req, res) => {
   }
 });
 
-// 특정 과목에 대한 족보 리스트 조회
 router.get('/subject/:subjectId', async (req, res) => {
   const { subjectId } = req.params;
   try {
     const papers = await Paper.findAll({
       where: { SubjectId: subjectId },
-      include: ['User'], // 업로드한 유저 정보도 포함
+      include: ['User'],
       order: [['createdAt', 'DESC']],
     });
     res.json(papers);

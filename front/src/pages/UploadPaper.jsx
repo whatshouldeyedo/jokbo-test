@@ -8,7 +8,6 @@ function UploadPaper() {
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState('');
 
-  // 과목 리스트 불러오기
   useEffect(() => {
     const fetchSubjects = async () => {
       const res = await axios.get('http://localhost:5000/subjects');
