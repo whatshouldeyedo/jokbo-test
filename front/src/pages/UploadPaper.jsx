@@ -23,6 +23,7 @@ function UploadPaper() {
     }
 
     const token = localStorage.getItem('token');
+    console.log('token:', token); // 추가해서 실제 값 확인
     const formData = new FormData();
     formData.append('file', file);
     formData.append('subjectId', selectedSubject);

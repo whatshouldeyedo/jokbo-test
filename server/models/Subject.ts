@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('./index');
+import { DataTypes } from 'sequelize';
+import sequelize from './index';
 
 const Subject = sequelize.define('Subject', {
   name: {
@@ -8,4 +8,4 @@ const Subject = sequelize.define('Subject', {
   },
 });
 
-module.exports = Subject;
+export default Subject;

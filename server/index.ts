@@ -1,8 +1,13 @@
-const express = require('express');
-const cors = require('cors');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+import express from 'express';
+import cors from 'cors';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+
+import authRouter from './routes/auth';
+import subjectRouter from './routes/subject';
+import paperRouter from './routes/paper';
+import sequelize from './models';
 
 const app = express();
 const PORT = 5000;
@@ -26,6 +31,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 app.post('/upload', upload.single('file'), (req, res) => {
+  if (!req.file) {
+    res.status(400).json({ error: 'File not uploaded' });
+    return;
+  }
   res.json({
     savedAs: req.file.filename,
     original: req.file.originalname,
@@ -35,12 +44,10 @@ app.post('/upload', upload.single('file'), (req, res) => {
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+app.use('/auth', authRouter);
+app.use('/subjects', subjectRouter);
+app.use('/papers', paperRouter);
 
-app.use('/auth', require('./routes/auth'));
-app.use('/subjects', require('./routes/subject'));
-app.use('/papers', require('./routes/paper'));
-
-const sequelize = require('./models');
 sequelize.sync({ alter: true }).then(() => {
   console.log('DB 동기화 완료');
   app.listen(PORT, () => {

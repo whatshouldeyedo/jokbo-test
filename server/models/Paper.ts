@@ -1,7 +1,7 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('./index');
-const User = require('./User');
-const Subject = require('./Subject');
+import { DataTypes } from 'sequelize';
+import sequelize from './index';
+import User from './User';
+import Subject from './Subject';
 
 const Paper = sequelize.define('Paper', {
   filename: {
@@ -19,4 +19,4 @@ Paper.belongsTo(User);
 Subject.hasMany(Paper);
 Paper.belongsTo(Subject);
 
-module.exports = Paper;
+export default Paper;
