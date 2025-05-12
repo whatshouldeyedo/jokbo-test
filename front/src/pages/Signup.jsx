@@ -12,7 +12,7 @@ function Signup() {
   const handleSignup = async () => {
     try {
       await axios.post('http://localhost:5000/auth/signup', form);
-      setStatus('회원가입 성공!');
+      setStatus('회원가입 성공');
     } catch (err) {
       setStatus(err.response.data.message || '회원가입 실패');
     }

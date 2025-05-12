@@ -46,3 +46,24 @@ app.listen(PORT, () => {
 // 이 위에 있는 기존 코드들 유지한 채로 추가:
 const authRoutes = require('./routes/auth');
 app.use('/auth', authRoutes);
+
+const sequelize = require('./models/index');
+const User = require('./models/User');
+
+sequelize.sync().then(() => {
+  console.log('📦 데이터베이스 준비 완료!');
+});
+
+const Subject = require('./models/Subject');
+const Paper = require('./models/Paper');
+
+// 모든 모델 동기화
+sequelize.sync({ alter: true }).then(() => {
+  console.log('📦 데이터베이스 준비 완료 (모델 동기화됨)');
+});
+
+const subjectRoutes = require('./routes/subject');
+app.use('/subjects', subjectRoutes);
+
+const paperRoutes = require('./routes/paper');
+app.use('/papers', paperRoutes);

@@ -12,8 +12,8 @@ function Login() {
   const handleLogin = async () => {
     try {
       const res = await axios.post('http://localhost:5000/auth/login', form);
-      localStorage.setItem('token', res.data.token); // 토큰 저장
-      setStatus('로그인 성공!');
+      localStorage.setItem('token', res.data.token);
+      setStatus('로그인 성공');
     } catch (err) {
       setStatus(err.response.data.message || '로그인 실패');
     }
