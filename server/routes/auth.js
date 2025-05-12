@@ -4,9 +4,9 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const router = express.Router();
 
-const SECRET_KEY = 'mysecretkey';
+require('dotenv').config();
+const SECRET_KEY = process.env.SECRET_KEY;
 
-// 회원가입
 router.post('/signup', async (req, res) => {
   const { email, password, name } = req.body;
   try {
@@ -21,7 +21,6 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-// 로그인
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -41,7 +40,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// 내 정보 확인
 router.get('/me', async (req, res) => {
   const auth = req.headers.authorization;
   if (!auth) return res.status(401).json({ message: '인증 필요' });
