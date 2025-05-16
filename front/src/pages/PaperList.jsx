@@ -12,8 +12,16 @@ function PaperList() {
 
   const fetchPapers = async (subjectId) => {
     setSelected(subjectId);
-    const res = await axios.get(`http://localhost:5000/papers/subject/${subjectId}`);
-    setPapers(res.data);
+    const token = localStorage.getItem('token');
+
+    try {
+      const res = await axios.get(`http://localhost:5000/papers/subject/${subjectId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setPapers(res.data);
+    } catch (err) {
+      alert('족보를 불러오는 데 실패했습니다.');
+    }
   };
 
   return (
@@ -37,6 +45,11 @@ function PaperList() {
             <a href={`http://localhost:5000/uploads/${p.filename}`} target="_blank" rel="noreferrer">
               📄 {p.description || '(설명 없음)'}
             </a>
+            {p.Club ? (
+              <span style={{ marginLeft: 10, fontStyle: 'italic' }}>({p.Club.name} 전용)</span>
+            ) : (
+              <span style={{ marginLeft: 10, color: '#777' }}>(전체 공개)</span>
+            )}
           </li>
         ))}
       </ul>

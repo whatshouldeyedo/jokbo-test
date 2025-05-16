@@ -12,7 +12,6 @@ if (!SECRET_KEY) {
   throw new Error('SECRET_KEY is not defined in environment variables');
 }
 
-// 회원가입
 interface SignupBody {
   email: string;
   password: string;
@@ -37,7 +36,6 @@ router.post('/signup', async (req: Request<{}, {}, SignupBody>, res: Response): 
   }
 });
 
-// 로그인
 interface LoginBody {
   email: string;
   password: string;
@@ -76,7 +74,6 @@ router.post('/login', async (req: Request<{}, {}, LoginBody>, res: Response): Pr
   }
 });
 
-// 사용자 정보 조회
 interface JwtPayload {
   id: number;
   email: string;

@@ -3,17 +3,27 @@ import axios from 'axios';
 
 function UploadPaper() {
   const [subjects, setSubjects] = useState([]);
+  const [clubs, setClubs] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState('');
+  const [selectedClub, setSelectedClub] = useState('');
   const [file, setFile] = useState(null);
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState('');
 
   useEffect(() => {
-    const fetchSubjects = async () => {
-      const res = await axios.get('http://localhost:5000/subjects');
-      setSubjects(res.data);
+    const fetchData = async () => {
+      const token = localStorage.getItem('token');
+      const [subjectRes, clubRes] = await Promise.all([
+        axios.get('http://localhost:5000/subjects'),
+        axios.get('http://localhost:5000/clubs/mine', {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
+      setSubjects(subjectRes.data);
+      setClubs(clubRes.data);
     };
-    fetchSubjects();
+
+    fetchData();
   }, []);
 
   const handleUpload = async () => {
@@ -27,6 +37,9 @@ function UploadPaper() {
     formData.append('file', file);
     formData.append('subjectId', selectedSubject);
     formData.append('description', description);
+    if (selectedClub) {
+      formData.append('clubId', selectedClub);
+    }
 
     try {
       await axios.post('http://localhost:5000/papers/upload', formData, {
@@ -49,9 +62,16 @@ function UploadPaper() {
       <select onChange={(e) => setSelectedSubject(e.target.value)} defaultValue="">
         <option value="" disabled>과목을 선택하세요</option>
         {subjects.map((subject) => (
-          <option key={subject.id} value={subject.id}>
-            {subject.name}
-          </option>
+          <option key={subject.id} value={subject.id}>{subject.name}</option>
+        ))}
+      </select>
+      <br /><br />
+
+      <label>공개 대상 (선택): </label>
+      <select onChange={(e) => setSelectedClub(e.target.value)} defaultValue="">
+        <option value="">전체 공개</option>
+        {clubs.map((club) => (
+          <option key={club.id} value={club.id}>{club.name}</option>
         ))}
       </select>
       <br /><br />

@@ -3,7 +3,6 @@ import { Subject } from '../models';
 
 const router = express.Router();
 
-// 과목 목록 조회
 router.get('/', async (req: Request, res: Response): Promise<void> => {
   try {
     const list = await Subject.findAll();
@@ -13,7 +12,6 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
-// 과목 생성
 interface SubjectBody {
   name: string;
 }

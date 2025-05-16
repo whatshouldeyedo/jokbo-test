@@ -6,6 +6,7 @@ export interface PaperAttributes {
   description?: string;
   userId: number;
   subjectId: number;
+  clubId?: number | null;
 }
 
 export interface PaperCreationAttributes extends Optional<PaperAttributes, 'id'> {}
@@ -16,6 +17,7 @@ export class Paper extends Model<PaperAttributes, PaperCreationAttributes> imple
   public description?: string;
   public userId!: number;
   public subjectId!: number;
+  public clubId?: number | null;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -44,6 +46,10 @@ export function initPaperModel(sequelize: Sequelize): typeof Paper {
       subjectId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+      },
+      clubId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
       },
     },
     {

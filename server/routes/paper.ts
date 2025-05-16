@@ -5,17 +5,30 @@ import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
 
-import { Paper, Subject, User } from '../models';
+import { Paper, Subject, User, Club, UserClub } from '../models';
 
 dotenv.config();
 const router = express.Router();
-const SECRET_KEY = process.env.SECRET_KEY;
+const SECRET_KEY = process.env.SECRET_KEY as string;
 
-if (!SECRET_KEY) {
-  throw new Error('SECRET_KEY is not defined in environment variables');
+if (!SECRET_KEY) throw new Error('SECRET_KEY is not defined');
+
+interface JwtPayload {
+  id: number;
 }
 
-// multer 설정
+function getUserIdFromRequest(req: Request): number | null {
+  const auth = req.headers.authorization;
+  if (!auth) return null;
+  try {
+    const token = auth.split(' ')[1];
+    const decoded = jwt.verify(token, SECRET_KEY) as unknown as JwtPayload;
+    return decoded.id;
+  } catch {
+    return null;
+  }
+}
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const dir = 'uploads/';
@@ -30,39 +43,28 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// JWT payload 타입
-interface JwtPayload {
-  id: number;
-  email: string;
-  name: string;
-}
-
-// 업로드 요청 body 타입
 interface UploadBody {
   subjectId: number;
   description?: string;
+  clubId?: number;
 }
 
-// 파일 업로드 API
 router.post(
   '/upload',
   upload.single('file'),
-  async (req: Request<{}, {}, UploadBody>, res: Response): Promise<void> => {
-    const { subjectId, description } = req.body;
-    const auth = req.headers.authorization;
-
-    if (!auth) {
-      res.status(401).json({ message: '로그인이 필요합니다' });
+  async (req: Request<{}, {}, UploadBody>, res: Response): Promise<void>  => {
+    const userId = getUserIdFromRequest(req);
+    if (!userId) {
+      res.status(401).json({ message: '인증 필요' });
       return;
     }
 
-    try {
-      const token = auth.split(' ')[1];
-      const decoded = jwt.verify(token, SECRET_KEY) as JwtPayload;
+    const { subjectId, description, clubId } = req.body;
 
-      const user = await User.findByPk(decoded.id);
+    try {
+      const user = await User.findByPk(userId);
       if (!user) {
-        res.status(404).json({ message: '사용자를 찾을 수 없습니다.' });
+        res.status(404).json({ message: '사용자 없음' });
         return;
       }
 
@@ -74,36 +76,62 @@ router.post(
 
       if (!req.file) {
         res.status(400).json({ message: '파일이 업로드되지 않았습니다.' });
-        return;
+      }
+
+      if (clubId) {
+        const isMember = await UserClub.findOne({ where: { userId, clubId } });
+        if (!isMember) {
+          res.status(403).json({ message: '동아리 소속이 아닙니다.' });
+          return;
+        }
       }
 
       const paper = await Paper.create({
-        filename: req.file.filename,
+        filename: req.file?.filename ?? '',
         description,
-        userId: user.id,
-        subjectId: subject.id,
+        userId,
+        subjectId,
+        clubId: clubId || null,
       });
 
       res.json({ message: '업로드 완료', paper });
     } catch (err: any) {
-      res.status(403).json({ message: '유효하지 않은 요청', error: err.message });
+      res.status(500).json({ message: '업로드 실패', error: err.message });
     }
   }
 );
 
-// 특정 과목의 논문 리스트 조회
-router.get('/subject/:subjectId', async (req: Request<{ subjectId: string }>, res: Response) => {
-  const { subjectId } = req.params;
+router.get('/subject/:subjectId', async (req: Request<{ subjectId: string }>, res: Response): Promise<void>  => {
+  const userId = getUserIdFromRequest(req);
+  if (!userId) {
+    res.status(401).json({ message: '인증 필요' });
+    return;
+  }
+
+  const subjectId = parseInt(req.params.subjectId, 10);
 
   try {
+    const memberships = await UserClub.findAll({ where: { userId } });
+    const myClubIds = memberships.map((m) => m.clubId);
+
     const papers = await Paper.findAll({
-      where: { subjectId: parseInt(subjectId, 10) },
-      include: [User],
+      where: {
+        subjectId,
+      },
+      include: [User, Club],
       order: [['createdAt', 'DESC']],
     });
-    res.json(papers);
+
+    const visible = papers.filter((paper) => {
+      if (paper.clubId != null) {
+        return myClubIds.includes(paper.clubId);
+      }
+      return paper.clubId === null;
+    });
+
+    res.json(visible);
   } catch (err: any) {
-    res.status(500).json({ message: '데이터를 불러오는 중 오류 발생', error: err.message });
+    res.status(500).json({ message: '데이터 조회 실패', error: err.message });
   }
 });
 

@@ -1,4 +1,5 @@
 import { Sequelize, DataTypes, Model, Optional } from 'sequelize';
+import type { Club } from './Club';
 
 export interface UserAttributes {
   id: number;
@@ -14,6 +15,7 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
   public email!: string;
   public password!: string;
   public name!: string;
+  public Clubs?: Club[];
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
