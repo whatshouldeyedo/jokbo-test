@@ -1,18 +1,27 @@
 import express, { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import User from '../models/User';
+import { User } from '../models';
 import dotenv from 'dotenv';
 
 dotenv.config();
 const router = express.Router();
 const SECRET_KEY = process.env.SECRET_KEY;
+
 if (!SECRET_KEY) {
   throw new Error('SECRET_KEY is not defined in environment variables');
 }
 
-router.post('/signup', async (req: Request, res: Response): Promise<void> => {
+// 회원가입
+interface SignupBody {
+  email: string;
+  password: string;
+  name: string;
+}
+
+router.post('/signup', async (req: Request<{}, {}, SignupBody>, res: Response): Promise<void> => {
   const { email, password, name } = req.body;
+
   try {
     const exists = await User.findOne({ where: { email } });
     if (exists) {
@@ -28,8 +37,15 @@ router.post('/signup', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
-router.post('/login', async (req: Request, res: Response): Promise<void> => {
+// 로그인
+interface LoginBody {
+  email: string;
+  password: string;
+}
+
+router.post('/login', async (req: Request<{}, {}, LoginBody>, res: Response): Promise<void> => {
   const { email, password } = req.body;
+
   try {
     const user = await User.findOne({ where: { email } });
     if (!user) {
@@ -37,7 +53,7 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const passwordHash = user.get('password') as string;
+    const passwordHash = user.password;
     const match = await bcrypt.compare(password, passwordHash);
     if (!match) {
       res.status(401).json({ message: '비밀번호 불일치' });
@@ -46,9 +62,9 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
 
     const token = jwt.sign(
       {
-        id: user.get('id'),
-        email: user.get('email'),
-        name: user.get('name')
+        id: user.id,
+        email: user.email,
+        name: user.name,
       },
       SECRET_KEY,
       { expiresIn: '2h' }
@@ -60,6 +76,13 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
+// 사용자 정보 조회
+interface JwtPayload {
+  id: number;
+  email: string;
+  name: string;
+}
+
 router.get('/me', async (req: Request, res: Response): Promise<void> => {
   const auth = req.headers.authorization;
   if (!auth) {
@@ -69,14 +92,15 @@ router.get('/me', async (req: Request, res: Response): Promise<void> => {
 
   try {
     const token = auth.split(' ')[1];
-    const decoded = jwt.verify(token, SECRET_KEY) as any;
+    const decoded = jwt.verify(token, SECRET_KEY) as JwtPayload;
     const user = await User.findByPk(decoded.id);
+
     if (!user) {
       res.status(404).json({ message: '사용자를 찾을 수 없습니다' });
       return;
     }
 
-    res.json({ email: user.get('email'), name: user.get('name') });
+    res.json({ email: user.email, name: user.name });
   } catch (err) {
     res.status(403).json({ message: '유효하지 않은 토큰' });
   }

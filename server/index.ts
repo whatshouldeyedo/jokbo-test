@@ -1,56 +1,47 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import dotenv from 'dotenv';
 
+import { sequelize } from './models';
 import authRouter from './routes/auth';
 import subjectRouter from './routes/subject';
 import paperRouter from './routes/paper';
-import sequelize from './models';
+
+dotenv.config();
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
+// 미들웨어
 app.use(cors());
 app.use(express.json());
 
-if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
+// uploads 디렉토리 생성
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    const basename = path.basename(file.originalname, ext);
-    cb(null, `${basename}-${Date.now()}${ext}`);
-  },
-});
+// 정적 파일 제공
+app.use('/uploads', express.static(uploadDir));
 
-const upload = multer({ storage });
-
-app.post('/upload', upload.single('file'), (req, res) => {
-  if (!req.file) {
-    res.status(400).json({ error: 'File not uploaded' });
-    return;
-  }
-  res.json({
-    savedAs: req.file.filename,
-    original: req.file.originalname,
-    path: `/uploads/${req.file.filename}`,
-  });
-});
-
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
+// 라우터 등록
 app.use('/auth', authRouter);
 app.use('/subjects', subjectRouter);
 app.use('/papers', paperRouter);
 
-sequelize.sync({ alter: true }).then(() => {
-  console.log('DB 동기화 완료');
-  app.listen(PORT, () => {
-    console.log(`서버가 http://localhost:${PORT} 에서 실행 중`);
+// 서버 실행
+sequelize
+  .sync({ alter: true })
+  .then(() => {
+    console.log('DB 동기화 완료');
+    app.listen(PORT, () => {
+      console.log(`서버가 http://localhost:${PORT} 에서 실행 중`);
+    });
+  })
+  .catch((err: Error) => {
+    console.error('DB 동기화 실패:', err.message);
   });
-});
