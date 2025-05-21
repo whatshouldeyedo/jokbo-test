@@ -20,6 +20,7 @@ function ManageClub() {
   const [newClubName, setNewClubName] = useState('');
   const [inviteEmails, setInviteEmails] = useState({});
   const [status, setStatus] = useState('');
+  const [statusType, setStatusType] = useState('info');
 
   const token = localStorage.getItem('token');
 
@@ -35,7 +36,11 @@ function ManageClub() {
   }, []);
 
   const handleCreateClub = async () => {
-    if (!newClubName) return;
+    if (!newClubName) {
+      setStatus('동아리 이름을 입력하세요.');
+      setStatusType('error');
+      return;
+    }
     try {
       await axios.post(
         'http://localhost:5000/clubs',
@@ -43,16 +48,22 @@ function ManageClub() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setStatus('동아리 생성 완료');
+      setStatusType('success');
       setNewClubName('');
       fetchClubs();
     } catch (err) {
       setStatus('생성 실패: ' + (err.response?.data?.message || '에러'));
+      setStatusType('error');
     }
   };
 
   const handleInvite = async (clubId) => {
     const email = inviteEmails[clubId];
-    if (!email) return;
+    if (!email) {
+      setStatus('초대할 이메일을 입력하세요.');
+      setStatusType('error');
+      return;
+    }
     try {
       await axios.post(
         `http://localhost:5000/clubs/${clubId}/invite`,
@@ -60,9 +71,11 @@ function ManageClub() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setStatus(`${email} 초대 성공`);
+      setStatusType('success');
       setInviteEmails((prev) => ({ ...prev, [clubId]: '' }));
     } catch (err) {
       setStatus(`초대 실패: ${err.response?.data?.message || '에러'}`);
+      setStatusType('error');
     }
   };
 
@@ -132,7 +145,7 @@ function ManageClub() {
         )}
 
         {status && (
-          <Alert severity={status.includes('성공') ? 'success' : 'error'} sx={{ mt: 3 }}>
+          <Alert severity={statusType} sx={{ mt: 3 }}>
             {status}
           </Alert>
         )}
