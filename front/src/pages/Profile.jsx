@@ -16,6 +16,7 @@ function Profile() {
   const [user, setUser] = useState(null);
   const [clubs, setClubs] = useState([]);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,23 +34,26 @@ function Profile() {
         setClubs(clubsRes.data);
       } catch (err) {
         setError('사용자 정보를 불러올 수 없습니다');
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchData();
   }, []);
 
-  if (error)
-    return (
-      <Container maxWidth="sm" sx={{ py: 4 }}>
-        <Alert severity="error">{error}</Alert>
-      </Container>
-    );
-  if (!user)
+  if (isLoading)
     return (
       <Container maxWidth="sm" sx={{ py: 4, textAlign: 'center' }}>
         <CircularProgress />
         <Typography sx={{ mt: 2 }}>로딩 중...</Typography>
+      </Container>
+    );
+
+  if (error)
+    return (
+      <Container maxWidth="sm" sx={{ py: 4 }}>
+        <Alert severity="error">{error}</Alert>
       </Container>
     );
 
