@@ -1,7 +1,21 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import {
+  Box,
+  Button,
+  Container,
+  Typography,
+  TextField,
+  List,
+  ListItem,
+  ListItemText,
+  Paper,
+  Divider,
+  Alert,
+  Stack,
+} from '@mui/material';
 
-function ClubManager() {
+function ManageClub() {
   const [clubs, setClubs] = useState([]);
   const [newClubName, setNewClubName] = useState('');
   const [inviteEmails, setInviteEmails] = useState({});
@@ -53,52 +67,78 @@ function ClubManager() {
   };
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>동아리 관리</h2>
+    <Container maxWidth="sm" sx={{ py: 4 }}>
+      <Paper elevation={3} sx={{ p: 4 }}>
+        <Typography variant="h4" gutterBottom>
+          동아리 관리
+        </Typography>
 
-      <h3>동아리 개설</h3>
-      <input
-        type="text"
-        placeholder="동아리 이름"
-        value={newClubName}
-        onChange={(e) => setNewClubName(e.target.value)}
-      />
-      <button onClick={handleCreateClub} style={{ marginLeft: 8 }}>
-        개설
-      </button>
+        <Typography variant="h6" sx={{ mt: 2 }}>
+          동아리 개설
+        </Typography>
+        <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
+          <TextField
+            label="동아리 이름"
+            value={newClubName}
+            onChange={(e) => setNewClubName(e.target.value)}
+            size="small"
+            fullWidth
+          />
+          <Button variant="contained" onClick={handleCreateClub}>
+            개설
+          </Button>
+        </Stack>
 
-      <h3 style={{ marginTop: 30 }}>내 동아리</h3>
-      {clubs.length === 0 ? (
-        <p>아직 동아리가 없습니다.</p>
-      ) : (
-        <ul>
-          {clubs.map((club) => (
-            <li key={club.id}>
-              <strong>{club.name}</strong>
-              <div style={{ marginTop: 5, marginBottom: 15 }}>
-                <input
-                  type="email"
-                  placeholder="초대할 이메일"
-                  value={inviteEmails[club.id] || ''}
-                  onChange={(e) =>
-                    setInviteEmails((prev) => ({
-                      ...prev,
-                      [club.id]: e.target.value,
-                    }))
-                  }
-                />
-                <button onClick={() => handleInvite(club.id)} style={{ marginLeft: 5 }}>
-                  초대
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+        <Divider sx={{ my: 3 }} />
 
-      {status && <p style={{ marginTop: 15 }}>{status}</p>}
-    </div>
+        <Typography variant="h6" sx={{ mb: 1 }}>
+          내 동아리
+        </Typography>
+        {clubs.length === 0 ? (
+          <Typography color="text.secondary">아직 동아리가 없습니다.</Typography>
+        ) : (
+          <List>
+            {clubs.map((club) => (
+              <Paper key={club.id} sx={{ mb: 2, p: 2 }}>
+                <ListItem disablePadding>
+                  <ListItemText
+                    primary={<Typography variant="subtitle1" fontWeight="bold">{club.name}</Typography>}
+                  />
+                </ListItem>
+                <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
+                  <TextField
+                    label="초대할 이메일"
+                    type="email"
+                    size="small"
+                    value={inviteEmails[club.id] || ''}
+                    onChange={(e) =>
+                      setInviteEmails((prev) => ({
+                        ...prev,
+                        [club.id]: e.target.value,
+                      }))
+                    }
+                    fullWidth
+                  />
+                  <Button
+                    variant="outlined"
+                    onClick={() => handleInvite(club.id)}
+                  >
+                    초대
+                  </Button>
+                </Stack>
+              </Paper>
+            ))}
+          </List>
+        )}
+
+        {status && (
+          <Alert severity={status.includes('성공') ? 'success' : 'error'} sx={{ mt: 3 }}>
+            {status}
+          </Alert>
+        )}
+      </Paper>
+    </Container>
   );
 }
 
-export default ClubManager;
+export default ManageClub;

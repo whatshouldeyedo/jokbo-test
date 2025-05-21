@@ -6,21 +6,79 @@ import UploadPaper from './pages/UploadPaper';
 import PaperList from './pages/PaperList';
 import ClubManager from './pages/ManageClub';
 
+import {
+  ThemeProvider,
+  CssBaseline,
+  createTheme,
+  AppBar,
+  Toolbar,
+  Button,
+  Box,
+  Container,
+  Typography,
+} from '@mui/material';
+
+const theme = createTheme({
+  palette: {
+    primary: { main: '#1976d2' },
+    secondary: { main: '#ff9800' },
+  },
+  typography: {
+    fontFamily: 'Roboto, Arial, sans-serif',
+  },
+});
+
 function App() {
   return (
-    <BrowserRouter>
-      <nav style={{ padding: 10 }}>
-        <Link to="/login">로그인</Link> | <Link to="/signup">회원가입</Link> | <Link to="/profile">내 정보</Link> | <Link to="/clubs">동아리 관리</Link> | <Link to="/upload">족보 업로드</Link> | <Link to="/papers">족보 보기</Link> 
-      </nav>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/clubs" element={<ClubManager />} />
-        <Route path="/upload" element={<UploadPaper />} />
-        <Route path="/papers" element={<PaperList />} />
-      </Routes>
-    </BrowserRouter>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <BrowserRouter>
+        <AppBar position="static" color="primary">
+          <Toolbar sx={{ justifyContent: 'space-between' }}>
+            {}
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <img
+                src="/logo.png"
+                alt="Jokbo Logo"
+                style={{ height: 40, marginRight: 16 }}
+              />
+            </Box>
+            {}
+            <Box>
+              <Button color="inherit" component={Link} to="/login">
+                로그인
+              </Button>
+              <Button color="inherit" component={Link} to="/signup">
+                회원가입
+              </Button>
+              <Button color="inherit" component={Link} to="/profile">
+                내 정보
+              </Button>
+              <Button color="inherit" component={Link} to="/clubs">
+                동아리 관리
+              </Button>
+              <Button color="inherit" component={Link} to="/upload">
+                족보 업로드
+              </Button>
+              <Button color="inherit" component={Link} to="/papers">
+                족보 보기
+              </Button>
+            </Box>
+          </Toolbar>
+        </AppBar>
+        {}
+        <Box sx={{ minHeight: 'calc(100vh - 64px)', bgcolor: '#f5f7fa', py: 4 }}>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/clubs" element={<ClubManager />} />
+            <Route path="/upload" element={<UploadPaper />} />
+            <Route path="/papers" element={<PaperList />} />
+          </Routes>
+        </Box>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

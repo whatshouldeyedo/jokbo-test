@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { Button, TextField, Paper, Typography } from '@mui/material';
 
 function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -21,11 +22,33 @@ function Login() {
 
   return (
     <div style={{ padding: 20 }}>
-      <h2>로그인</h2>
-      <input name="email" placeholder="이메일" onChange={handleChange} /><br />
-      <input name="password" type="password" placeholder="비밀번호" onChange={handleChange} /><br />
-      <button onClick={handleLogin}>로그인</button>
-      <p>{status}</p>
+      <Paper elevation={3} style={{ padding: 32, maxWidth: 400, margin: 'auto' }}>
+        <Typography variant="h5" gutterBottom>로그인</Typography>
+        <TextField 
+          label="이메일" 
+          fullWidth 
+          margin="normal" 
+          name="email"
+          onChange={handleChange}
+        />
+        <TextField 
+          label="비밀번호" 
+          type="password" 
+          fullWidth 
+          margin="normal" 
+          name="password"
+          onChange={handleChange}
+        />
+        <Button 
+          variant="contained" 
+          color="primary" 
+          fullWidth
+          onClick={handleLogin}
+        >
+          로그인
+        </Button>
+        <p>{status}</p>
+      </Paper>
     </div>
   );
 }

@@ -1,5 +1,18 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import {
+  Container,
+  Paper,
+  Typography,
+  Select,
+  MenuItem,
+  TextField,
+  Button,
+  InputLabel,
+  FormControl,
+  Alert,
+  Box,
+} from '@mui/material';
 
 function UploadPaper() {
   const [subjects, setSubjects] = useState([]);
@@ -55,37 +68,85 @@ function UploadPaper() {
   };
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>족보 업로드</h2>
+    <Container maxWidth="sm" sx={{ py: 4 }}>
+      <Paper elevation={3} sx={{ p: 4 }}>
+        <Typography variant="h4" gutterBottom>
+          족보 업로드
+        </Typography>
 
-      <label>과목 선택: </label>
-      <select onChange={(e) => setSelectedSubject(e.target.value)} defaultValue="">
-        <option value="" disabled>과목을 선택하세요</option>
-        {subjects.map((subject) => (
-          <option key={subject.id} value={subject.id}>{subject.name}</option>
-        ))}
-      </select>
-      <br /><br />
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <InputLabel id="subject-label">과목 선택</InputLabel>
+          <Select
+            labelId="subject-label"
+            value={selectedSubject}
+            label="과목 선택"
+            onChange={(e) => setSelectedSubject(e.target.value)}
+          >
+            <MenuItem value="" disabled>
+              과목을 선택하세요
+            </MenuItem>
+            {subjects.map((subject) => (
+              <MenuItem key={subject.id} value={subject.id}>
+                {subject.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
-      <label>공개 대상 (선택): </label>
-      <select onChange={(e) => setSelectedClub(e.target.value)} defaultValue="">
-        <option value="">전체 공개</option>
-        {clubs.map((club) => (
-          <option key={club.id} value={club.id}>{club.name}</option>
-        ))}
-      </select>
-      <br /><br />
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <InputLabel id="club-label">공개 대상 (선택)</InputLabel>
+          <Select
+            labelId="club-label"
+            value={selectedClub}
+            label="공개 대상 (선택)"
+            onChange={(e) => setSelectedClub(e.target.value)}
+          >
+            <MenuItem value="">전체 공개</MenuItem>
+            {clubs.map((club) => (
+              <MenuItem key={club.id} value={club.id}>
+                {club.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
-      <label>설명:</label><br />
-      <textarea rows="3" onChange={(e) => setDescription(e.target.value)} />
-      <br /><br />
+        <TextField
+          label="설명"
+          multiline
+          rows={3}
+          fullWidth
+          sx={{ mb: 2 }}
+          onChange={(e) => setDescription(e.target.value)}
+        />
 
-      <input type="file" accept="application/pdf" onChange={(e) => setFile(e.target.files[0])} />
-      <br /><br />
-      <button onClick={handleUpload}>업로드</button>
+        <Box sx={{ mb: 2 }}>
+          <Button variant="contained" component="label">
+            파일 선택 (PDF)
+            <input
+              type="file"
+              accept="application/pdf"
+              hidden
+              onChange={(e) => setFile(e.target.files[0])}
+            />
+          </Button>
+          {file && (
+            <Typography variant="body2" sx={{ ml: 2, display: 'inline' }}>
+              {file.name}
+            </Typography>
+          )}
+        </Box>
 
-      <p>{status}</p>
-    </div>
+        <Button variant="contained" color="primary" fullWidth onClick={handleUpload}>
+          업로드
+        </Button>
+
+        {status && (
+          <Alert severity={status.includes('성공') ? 'success' : 'error'} sx={{ mt: 3 }}>
+            {status}
+          </Alert>
+        )}
+      </Paper>
+    </Container>
   );
 }
 

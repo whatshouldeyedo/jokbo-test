@@ -1,5 +1,16 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import {
+  Container,
+  Paper,
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  CircularProgress,
+  Alert,
+  Divider,
+} from '@mui/material';
 
 function Profile() {
   const [user, setUser] = useState(null);
@@ -28,26 +39,47 @@ function Profile() {
     fetchData();
   }, []);
 
-  if (error) return <p>{error}</p>;
-  if (!user) return <p>로딩 중...</p>;
+  if (error)
+    return (
+      <Container maxWidth="sm" sx={{ py: 4 }}>
+        <Alert severity="error">{error}</Alert>
+      </Container>
+    );
+  if (!user)
+    return (
+      <Container maxWidth="sm" sx={{ py: 4, textAlign: 'center' }}>
+        <CircularProgress />
+        <Typography sx={{ mt: 2 }}>로딩 중...</Typography>
+      </Container>
+    );
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>내 정보</h2>
-      <p>이메일: {user.email}</p>
-      <p>이름: {user.name}</p>
-
-      <h3 style={{ marginTop: 30 }}>내 동아리</h3>
-      {clubs.length === 0 ? (
-        <p>가입한 동아리가 없습니다.</p>
-      ) : (
-        <ul>
-          {clubs.map((club) => (
-            <li key={club.id}>{club.name}</li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <Container maxWidth="sm" sx={{ py: 4 }}>
+      <Paper elevation={3} sx={{ p: 4 }}>
+        <Typography variant="h4" gutterBottom>
+          내 정보
+        </Typography>
+        <Typography variant="body1">이메일: {user.email}</Typography>
+        <Typography variant="body1" sx={{ mb: 2 }}>
+          이름: {user.name}
+        </Typography>
+        <Divider sx={{ my: 3 }} />
+        <Typography variant="h6" gutterBottom>
+          내 동아리
+        </Typography>
+        {clubs.length === 0 ? (
+          <Typography color="text.secondary">가입한 동아리가 없습니다.</Typography>
+        ) : (
+          <List>
+            {clubs.map((club) => (
+              <ListItem key={club.id} disablePadding>
+                <ListItemText primary={club.name} />
+              </ListItem>
+            ))}
+          </List>
+        )}
+      </Paper>
+    </Container>
   );
 }
 

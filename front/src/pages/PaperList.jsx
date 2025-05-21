@@ -1,5 +1,18 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import {
+  Container,
+  Paper,
+  Typography,
+  Select,
+  MenuItem,
+  Divider,
+  List,
+  ListItem,
+  ListItemText,
+  Chip,
+  Box,
+} from '@mui/material';
 
 function PaperList() {
   const [subjects, setSubjects] = useState([]);
@@ -25,35 +38,71 @@ function PaperList() {
   };
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>족보 보기</h2>
+    <Container maxWidth="sm" sx={{ py: 4 }}>
+      <Paper elevation={3} sx={{ p: 4 }}>
+        <Typography variant="h4" gutterBottom>
+          족보 보기
+        </Typography>
 
-      <select onChange={(e) => fetchPapers(e.target.value)} defaultValue="">
-        <option value="" disabled>과목 선택</option>
-        {subjects.map((s) => (
-          <option key={s.id} value={s.id}>{s.name}</option>
-        ))}
-      </select>
+        <Select
+          value={selected}
+          onChange={(e) => fetchPapers(e.target.value)}
+          displayEmpty
+          fullWidth
+          sx={{ mb: 2 }}
+        >
+          <MenuItem value="" disabled>
+            과목 선택
+          </MenuItem>
+          {subjects.map((s) => (
+            <MenuItem key={s.id} value={s.id}>
+              {s.name}
+            </MenuItem>
+          ))}
+        </Select>
 
-      <hr />
+        <Divider sx={{ my: 2 }} />
 
-      {papers.length === 0 && selected && <p>족보가 없습니다.</p>}
+        {papers.length === 0 && selected && (
+          <Typography color="text.secondary">족보가 없습니다.</Typography>
+        )}
 
-      <ul>
-        {papers.map((p) => (
-          <li key={p.id}>
-            <a href={`http://localhost:5000/uploads/${p.filename}`} target="_blank" rel="noreferrer">
-              📄 {p.description || '(설명 없음)'}
-            </a>
-            {p.Club ? (
-              <span style={{ marginLeft: 10, fontStyle: 'italic' }}>({p.Club.name} 전용)</span>
-            ) : (
-              <span style={{ marginLeft: 10, color: '#777' }}>(전체 공개)</span>
-            )}
-          </li>
-        ))}
-      </ul>
-    </div>
+        <List>
+          {papers.map((p) => (
+            <ListItem key={p.id} disablePadding sx={{ mb: 1 }}>
+              <ListItemText
+                primary={
+                  <Box>
+                    <a
+                      href={`http://localhost:5000/uploads/${p.filename}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ textDecoration: 'none', color: '#1976d2', fontWeight: 500 }}
+                    >
+                      📄 {p.description || '(설명 없음)'}
+                    </a>
+                    {p.Club ? (
+                      <Chip
+                        label={`${p.Club.name} 전용`}
+                        size="small"
+                        color="secondary"
+                        sx={{ ml: 1 }}
+                      />
+                    ) : (
+                      <Chip
+                        label="전체 공개"
+                        size="small"
+                        sx={{ ml: 1, bgcolor: '#eee', color: '#555' }}
+                      />
+                    )}
+                  </Box>
+                }
+              />
+            </ListItem>
+          ))}
+        </List>
+      </Paper>
+    </Container>
   );
 }
 
