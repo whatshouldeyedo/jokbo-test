@@ -20,7 +20,31 @@ interface SignupBody {
 
 router.post('/signup', async (req: Request<{}, {}, SignupBody>, res: Response): Promise<void> => {
   const { email, password, name } = req.body;
-
+  if (
+    !email ||
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  ) {
+    res.status(400).json({ message: '올바른 이메일을 입력하세요.' });
+    return;
+  }
+  if (
+    !password ||
+    password.length < 8 ||
+    password.length > 32 ||
+    !/^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/.test(password)
+  ) {
+    res.status(400).json({ message: '비밀번호는 8~32자, 영문/숫자/특수문자만 가능합니다.' });
+    return;
+  }
+  if (
+    !name ||
+    name.length < 2 ||
+    name.length > 20 ||
+    !/^[가-힣a-zA-Z0-9]+$/.test(name)
+  ) {
+    res.status(400).json({ message: '이름은 2~20자, 한글/영문/숫자만 가능합니다.' });
+    return;
+  }
   try {
     const exists = await User.findOne({ where: { email } });
     if (exists) {
@@ -32,6 +56,7 @@ router.post('/signup', async (req: Request<{}, {}, SignupBody>, res: Response): 
     await User.create({ email, password: hashed, name });
     res.json({ message: '회원가입 완료' });
   } catch (err: any) {
+    console.error(err);
     res.status(500).json({ message: '서버 오류', error: err.message });
   }
 });

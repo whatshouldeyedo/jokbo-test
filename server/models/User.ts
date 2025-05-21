@@ -37,10 +37,17 @@ export function initUserModel(sequelize: Sequelize): typeof User {
       password: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+          is: /^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/
+        },
       },
       name: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+          len: [2, 20],
+          is: /^[가-힣a-zA-Z0-9]+$/
+        },
       },
     },
     {

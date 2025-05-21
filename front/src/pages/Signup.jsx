@@ -1,10 +1,38 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Button, TextField, Paper, Typography } from '@mui/material';
 
 function Signup() {
   const [form, setForm] = useState({ email: '', password: '', name: '' });
   const [status, setStatus] = useState('');
+  const navigate = useNavigate();
+
+  const validate = () => {
+    if (
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)
+    ) {
+      setStatus('올바른 이메일을 입력하세요.');
+      return false;
+    }
+    if (
+      form.password.length < 8 ||
+      form.password.length > 32 ||
+      !/^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/.test(form.password)
+    ) {
+      setStatus('비밀번호는 8~32자, 영문/숫자/특수문자만 가능합니다.');
+      return false;
+    }
+    if (
+      form.name.length < 2 ||
+      form.name.length > 20 ||
+      !/^[가-힣a-zA-Z0-9]+$/.test(form.name)
+    ) {
+      setStatus('이름은 2~20자, 한글/영문/숫자만 가능합니다.');
+      return false;
+    }
+    return true;
+  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -14,6 +42,7 @@ function Signup() {
     try {
       await axios.post('http://localhost:5000/auth/signup', form);
       setStatus('회원가입 성공');
+      setTimeout(() => navigate('/login'), 1000);
     } catch (err) {
       setStatus(err.response.data.message || '회원가입 실패');
     }
