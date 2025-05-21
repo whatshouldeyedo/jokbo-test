@@ -111,7 +111,7 @@ function UploadPaper() {
         </FormControl>
 
         <TextField
-          label="설명"
+          label="설명 (선택, 50자 이내)"
           multiline
           rows={3}
           fullWidth
