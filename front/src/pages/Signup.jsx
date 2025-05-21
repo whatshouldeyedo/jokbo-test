@@ -39,6 +39,7 @@ function Signup() {
   };
 
   const handleSignup = async () => {
+    if (!validate()) return;
     try {
       await axios.post('http://localhost:5000/auth/signup', form);
       setStatus('회원가입 성공');

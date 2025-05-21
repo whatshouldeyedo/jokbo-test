@@ -6,11 +6,27 @@ function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [status, setStatus] = useState('');
 
+  const validate = () => {
+    if (form.email.length == 0) {
+      setStatus('이메일을 입력하세요.');
+      return false;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      setStatus('올바른 이메일을 입력하세요.');
+      return false;
+    }
+    if (form.password.length == 0) {
+      setStatus('비밀번호를 입력하세요.');
+      return false;
+    }
+    return true;
+  };
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleLogin = async () => {
+    if (!validate()) return;
     try {
       const res = await axios.post('http://localhost:5000/auth/login', form);
       localStorage.setItem('token', res.data.token);
