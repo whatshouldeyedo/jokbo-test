@@ -32,7 +32,7 @@ app.use('/papers', paperRouter);
 app.use('/clubs', clubRouter);
 
 sequelize
-  .sync({ alter: true })
+  .sync()
   .then(() => {
     console.log('DB 동기화 완료');
     app.listen(PORT, () => {
