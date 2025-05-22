@@ -23,9 +23,16 @@ function ManageClub() {
   const [statusType, setStatusType] = useState('info');
 
   const token = localStorage.getItem('token');
-
+  /*
   const fetchClubs = async () => {
     const res = await axios.get('http://localhost:5000/clubs/mine', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setClubs(res.data);
+  };
+  */
+  const fetchClubs = async () => {
+    const res = await axios.get('https://sori.newbie.sparcs.me/clubs/mine', {
       headers: { Authorization: `Bearer ${token}` },
     });
     setClubs(res.data);
@@ -43,7 +50,7 @@ function ManageClub() {
     }
     try {
       await axios.post(
-        'http://localhost:5000/clubs',
+        'https://sori.newbie.sparcs.me/clubs',
         { name: newClubName },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -66,7 +73,7 @@ function ManageClub() {
     }
     try {
       await axios.post(
-        `http://localhost:5000/clubs/${clubId}/invite`,
+        `https://sori.newbie.sparcs.me/clubs/${clubId}/invite`,
         { email },
         { headers: { Authorization: `Bearer ${token}` } }
       );

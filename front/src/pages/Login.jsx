@@ -34,7 +34,8 @@ function Login() {
   const handleLogin = async () => {
     if (!validate()) return;
     try {
-      const res = await axios.post('http://localhost:5000/auth/login', form);
+      //const res = await axios.post('http://localhost:5000/auth/login', form);
+      const res = await axios.post('https://sori.newbie.sparcs.me/auth/login', form);
       localStorage.setItem('token', res.data.token);
       setStatus('로그인 성공');
       setIsLoggedIn(true);

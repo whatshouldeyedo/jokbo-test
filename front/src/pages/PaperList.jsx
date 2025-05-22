@@ -20,7 +20,7 @@ function PaperList() {
   const [papers, setPapers] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/subjects').then((res) => setSubjects(res.data));
+    axios.get('https://sori.newbie.sparcs.me/subjects').then((res) => setSubjects(res.data));
   }, []);
 
   const fetchPapers = async (subjectId) => {
@@ -28,7 +28,7 @@ function PaperList() {
     const token = localStorage.getItem('token');
 
     try {
-      const res = await axios.get(`http://localhost:5000/papers/subject/${subjectId}`, {
+      const res = await axios.get(`https://sori.newbie.sparcs.me/papers/subject/${subjectId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setPapers(res.data);
@@ -74,7 +74,7 @@ function PaperList() {
                 primary={
                   <Box>
                     <a
-                      href={`http://localhost:5000/uploads/${p.filename}`}
+                      href={`https://sori.newbie.sparcs.me/uploads/${p.filename}`}
                       target="_blank"
                       rel="noreferrer"
                       style={{ textDecoration: 'none', color: '#1976d2', fontWeight: 500 }}
