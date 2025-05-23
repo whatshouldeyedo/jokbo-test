@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 const router = express.Router();
+import asyncHandler from 'express-async-handler';
 const SECRET_KEY = process.env.SECRET_KEY;
 
 if (!SECRET_KEY) throw new Error('SECRET_KEY is not defined');
@@ -30,7 +31,7 @@ interface CreateClubBody {
   name: string;
 }
 
-router.post('/', async (req: Request<{}, {}, CreateClubBody>, res: Response): Promise<void>  => {
+router.post('/', asyncHandler(async (req: Request<{}, {}, CreateClubBody>, res: Response): Promise<void>  => {
   const userId = getUserIdFromRequest(req);
   if (!userId){
     res.status(401).json({ message: '인증 필요' });
@@ -53,13 +54,13 @@ router.post('/', async (req: Request<{}, {}, CreateClubBody>, res: Response): Pr
   } catch (err: any) {
     res.status(500).json({ message: '동아리 생성 실패', error: err.message });
   }
-});
+}));
 
 interface InviteBody {
   email: string;
 }
 
-router.post('/:clubId/invite', async (req: Request<{ clubId: string }, {}, InviteBody>, res: Response): Promise<void>  => {
+router.post('/:clubId/invite', asyncHandler(async (req: Request<{ clubId: string }, {}, InviteBody>, res: Response): Promise<void>  => {
   const userId = getUserIdFromRequest(req);
   if (!userId){
     res.status(401).json({ message: '인증 필요' });
@@ -89,9 +90,9 @@ router.post('/:clubId/invite', async (req: Request<{ clubId: string }, {}, Invit
   } catch (err: any) {
     res.status(500).json({ message: '초대 실패', error: err.message });
   }
-});
+}));
 
-router.get('/mine', async (req: Request, res: Response): Promise<void>  => {
+router.get('/mine', asyncHandler(async (req: Request, res: Response): Promise<void>  => {
   const userId = getUserIdFromRequest(req);
   if (!userId){
     res.status(401).json({ message: '인증 필요' });
@@ -112,6 +113,6 @@ router.get('/mine', async (req: Request, res: Response): Promise<void>  => {
   } catch (err: any) {
     res.status(500).json({ message: '동아리 목록 조회 실패', error: err.message });
   }
-});
+}));
 
 export default router;

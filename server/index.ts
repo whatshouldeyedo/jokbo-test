@@ -14,9 +14,14 @@ import clubRouter from './routes/club';
 dotenv.config();
 
 const app = express();
+import asyncHandler from 'express-async-handler';
 const PORT = process.env.PORT || 8000;
 
-app.use(cors());
+app.use(cors({
+  origin: 'https://sori.newbie.sparcs.me',
+  credentials: true
+}));
+
 app.use(express.json());
 
 const uploadDir = path.join(__dirname, 'uploads');
@@ -32,7 +37,7 @@ app.use('/papers', paperRouter);
 app.use('/clubs', clubRouter);
 
 sequelize
-  .sync()
+  .sync({alter: true})
   .then(() => {
     console.log('DB 동기화 완료');
     app.listen(PORT, () => {

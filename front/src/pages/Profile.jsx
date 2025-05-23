@@ -23,10 +23,10 @@ function Profile() {
       const token = localStorage.getItem('token');
       try {
         const [userRes, clubsRes] = await Promise.all([
-          axios.get('https://sori.newbie.sparcs.me/auth/me', {
+          axios.get('https://sori.api.newbie.sparcs.me/auth/me', {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get('https://sori.newbie.sparcs.me/clubs/mine', {
+          axios.get('https://sori.api.newbie.sparcs.me/clubs/mine', {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);

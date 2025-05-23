@@ -27,8 +27,8 @@ function UploadPaper() {
     const fetchData = async () => {
       const token = localStorage.getItem('token');
       const [subjectRes, clubRes] = await Promise.all([
-        axios.get('https://sori.newbie.sparcs.me/subjects'),
-        axios.get('https://sori.newbie.sparcs.me/clubs/mine', {
+        axios.get('https://sori.api.newbie.sparcs.me/subjects'),
+        axios.get('https://sori.api.newbie.sparcs.me/clubs/mine', {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -55,7 +55,7 @@ function UploadPaper() {
     }
 
     try {
-      await axios.post('https://sori.newbie.sparcs.me/papers/upload', formData, {
+      await axios.post('https://sori.api.newbie.sparcs.me/papers/upload', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',

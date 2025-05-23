@@ -9,6 +9,7 @@ import { Paper, Subject, User, Club, UserClub } from '../models';
 
 dotenv.config();
 const router = express.Router();
+import asyncHandler from 'express-async-handler';
 const SECRET_KEY = process.env.SECRET_KEY as string;
 
 if (!SECRET_KEY) throw new Error('SECRET_KEY is not defined');
@@ -52,7 +53,7 @@ interface UploadBody {
 router.post(
   '/upload',
   upload.single('file'),
-  async (req: Request<{}, {}, UploadBody>, res: Response): Promise<void>  => {
+  asyncHandler(async (req: Request<{}, {}, UploadBody>, res: Response): Promise<void>  => {
     const userId = getUserIdFromRequest(req);
     if (!userId) {
       res.status(401).json({ message: '인증 필요' });
@@ -99,9 +100,9 @@ router.post(
       res.status(500).json({ message: '업로드 실패', error: err.message });
     }
   }
-);
+));
 
-router.get('/subject/:subjectId', async (req: Request<{ subjectId: string }>, res: Response): Promise<void>  => {
+router.get('/subject/:subjectId', asyncHandler(async (req: Request<{ subjectId: string }>, res: Response): Promise<void>  => {
   const userId = getUserIdFromRequest(req);
   if (!userId) {
     res.status(401).json({ message: '인증 필요' });
@@ -133,6 +134,6 @@ router.get('/subject/:subjectId', async (req: Request<{ subjectId: string }>, re
   } catch (err: any) {
     res.status(500).json({ message: '데이터 조회 실패', error: err.message });
   }
-});
+}));
 
 export default router;

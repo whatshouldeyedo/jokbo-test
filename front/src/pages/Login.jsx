@@ -34,13 +34,12 @@ function Login() {
   const handleLogin = async () => {
     if (!validate()) return;
     try {
-      //const res = await axios.post('http://localhost:5000/auth/login', form);
-      const res = await axios.post('https://sori.newbie.sparcs.me/auth/login', form);
+      const res = await axios.post('https://sori.api.newbie.sparcs.me/auth/login', form);
       localStorage.setItem('token', res.data.token);
       setStatus('로그인 성공');
       setIsLoggedIn(true);
     } catch (err) {
-      setStatus(err.response.data.message || '로그인 실패');
+      setStatus(err.response?.data?.message || err.message || '회원가입 실패');
     }
   };
 

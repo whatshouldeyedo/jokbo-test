@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 const router = express.Router();
+import asyncHandler from 'express-async-handler';
 const SECRET_KEY = process.env.SECRET_KEY;
 
 if (!SECRET_KEY) {
@@ -18,7 +19,7 @@ interface SignupBody {
   name: string;
 }
 
-router.post('/signup', async (req: Request<{}, {}, SignupBody>, res: Response): Promise<void> => {
+router.post('/signup', asyncHandler (async (req: Request<{}, {}, SignupBody>, res: Response): Promise<void> => {
   const { email, password, name } = req.body;
   if (
     !email ||
@@ -59,14 +60,14 @@ router.post('/signup', async (req: Request<{}, {}, SignupBody>, res: Response): 
     console.error(err);
     res.status(500).json({ message: '서버 오류', error: err.message });
   }
-});
+}));
 
 interface LoginBody {
   email: string;
   password: string;
 }
 
-router.post('/login', async (req: Request<{}, {}, LoginBody>, res: Response): Promise<void> => {
+router.post('/login', asyncHandler(async (req: Request<{}, {}, LoginBody>, res: Response): Promise<void> => {
   const { email, password } = req.body;
 
   try {
@@ -97,7 +98,7 @@ router.post('/login', async (req: Request<{}, {}, LoginBody>, res: Response): Pr
   } catch (err: any) {
     res.status(500).json({ message: '서버 오류', error: err.message });
   }
-});
+}));
 
 interface JwtPayload {
   id: number;
@@ -105,7 +106,7 @@ interface JwtPayload {
   name: string;
 }
 
-router.get('/me', async (req: Request, res: Response): Promise<void> => {
+router.get('/me', asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const auth = req.headers.authorization;
   if (!auth) {
     res.status(401).json({ message: '인증 필요' });
@@ -126,6 +127,6 @@ router.get('/me', async (req: Request, res: Response): Promise<void> => {
   } catch (err) {
     res.status(403).json({ message: '유효하지 않은 토큰' });
   }
-});
+}));
 
 export default router;
