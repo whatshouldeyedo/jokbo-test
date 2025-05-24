@@ -45,5 +45,5 @@ sequelize
     });
   })
   .catch((err: Error) => {
-    console.error('DB 동기화 실패:', err.message);
+    console.error('DB 동기화 실패:', err);
   });
